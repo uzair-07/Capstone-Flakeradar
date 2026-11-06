@@ -1,7 +1,6 @@
 """Turn a parsed report into a CI run, test cases and test results."""
 
 from collections.abc import Iterable, Iterator
-from typing import TypeVar
 
 from sqlalchemy import insert, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -11,10 +10,9 @@ from app.ingest.junit import ParsedReport
 from app.models import CiRun, TestCase, TestResult, Upload
 
 BATCH_SIZE = 1_000
-T = TypeVar("T")
 
 
-def _batches(items: list[T], size: int = BATCH_SIZE) -> Iterator[list[T]]:
+def _batches[T](items: list[T], size: int = BATCH_SIZE) -> Iterator[list[T]]:
     for start in range(0, len(items), size):
         yield items[start : start + size]
 

@@ -1,9 +1,7 @@
 """Integration fixtures: a real PostgreSQL schema built by Alembic, and a real Redis queue.
 
-Run locally with the Docker Compose database and queue, using a separate database:
-
-    FLAKERADAR_DATABASE_URL=postgresql+psycopg://flakeradar:flakeradar@localhost:5432/flakeradar_test  # noqa: E501
-    FLAKERADAR_REDIS_URL=redis://localhost:6379/15
+Run locally with the Docker Compose database and queue, using a separate database
+(`flakeradar_test`) and Redis database 15. See "Development" in the README.
 """
 
 from collections.abc import Iterator

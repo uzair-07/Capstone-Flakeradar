@@ -9,6 +9,7 @@ breaks your build. Pass --fail-on-error to change that.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import glob
 import json
 import os
@@ -111,10 +112,8 @@ def _request(
             return json.loads(response.read().decode() or "{}")
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode(errors="replace")
-        try:
+        with contextlib.suppress(ValueError, AttributeError):
             detail = json.loads(detail).get("detail", detail)
-        except (ValueError, AttributeError):
-            pass
         raise UploadError(f"HTTP {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
         raise UploadError(f"Cannot reach {url}: {exc.reason}") from exc
