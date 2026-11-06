@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<testsuites>
+  <testsuite name="api">
+    <testsuite name="api.users" file="tests/api/users.py">
+      <testcase classname="api.users" name="test_create_user" time="0.050"/>
+      <testcase classname="api.users" name="test_delete_user" time="1,234.5"/>
+    </testsuite>
+    <testsuite name="api.orders">
+      <testcase classname="api.orders" name="test_list_orders" time="not-a-number"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

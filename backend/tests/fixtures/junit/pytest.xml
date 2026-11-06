@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites name="pytest tests">
+  <testsuite name="pytest" errors="1" failures="1" skipped="1" tests="5" time="1.732" timestamp="2026-11-05T14:02:11.418392+00:00" hostname="runner-1">
+    <testcase classname="tests.test_checkout" name="test_total_includes_tax" time="0.004"/>
+    <testcase classname="tests.test_checkout" name="test_discount_applied[10%]" time="0.003"/>
+    <testcase classname="tests.test_checkout" name="test_payment_timeout" time="1.502">
+      <failure message="AssertionError: expected status 200, got 504">def test_payment_timeout(client):
+&gt;       assert client.post("/pay").status_code == 200
+E       AssertionError: expected status 200, got 504</failure>
+    </testcase>
+    <testcase classname="tests.test_inventory" name="test_reserve_stock" time="0.221">
+      <error message="failed on setup with &quot;ConnectionRefusedError&quot;">ConnectionRefusedError: [Errno 111] Connection refused</error>
+    </testcase>
+    <testcase classname="tests.test_inventory" name="test_bulk_import" time="0.000">
+      <skipped type="pytest.skip" message="slow test, run nightly">tests/test_inventory.py:40: slow test, run nightly</skipped>
+    </testcase>
+  </testsuite>
+</testsuites>

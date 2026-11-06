@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="com.example.orders.OrderServiceTest" time="0.912" tests="3" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.version" value="21.0.4"/>
+  </properties>
+  <testcase name="createsOrder()" classname="com.example.orders.OrderServiceTest" time="0.118"/>
+  <testcase name="rejectsEmptyCart()" classname="com.example.orders.OrderServiceTest" time="0.009"/>
+  <testcase name="publishesEventOnce()" classname="com.example.orders.OrderServiceTest" time="0.785">
+    <flakyFailure message="expected: &lt;1&gt; but was: &lt;2&gt;" type="org.opentest4j.AssertionFailedError">
+      <stackTrace>org.opentest4j.AssertionFailedError: expected: &lt;1&gt; but was: &lt;2&gt;</stackTrace>
+    </flakyFailure>
+  </testcase>
+</testsuite>

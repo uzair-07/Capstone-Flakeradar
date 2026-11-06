@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE testsuites [ <!ENTITY secret SYSTEM "file:///etc/passwd"> ]>
+<testsuites>
+  <testsuite name="evil">
+    <testcase classname="x" name="&secret;"/>
+  </testsuite>
+</testsuites>

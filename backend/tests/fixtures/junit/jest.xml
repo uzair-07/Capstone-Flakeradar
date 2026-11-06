@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="3" failures="1" errors="0" time="2.14">
+  <testsuite name="CartSummary" errors="0" failures="1" skipped="0" timestamp="2026-11-05T14:05:00" time="1.9" tests="3">
+    <testcase classname="CartSummary renders the total" name="CartSummary renders the total" time="0.031">
+    </testcase>
+    <testcase classname="CartSummary updates when an item is removed" name="CartSummary updates when an item is removed" time="1.204">
+      <failure>Error: Timed out in waitFor after 1000ms.
+    at waitFor (node_modules/@testing-library/dom/dist/wait-for.js:166:27)</failure>
+    </testcase>
+    <testcase classname="CartSummary shows an empty state" name="CartSummary shows an empty state" time="0.012">
+    </testcase>
+  </testsuite>
+</testsuites>

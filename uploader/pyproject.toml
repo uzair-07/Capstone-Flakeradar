@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flakeradar-uploader"
+version = "0.1.0"
+description = "Upload JUnit XML reports from CI to FlakeRadar."
+requires-python = ">=3.10"
+dependencies = []  # standard library only, so it installs fast on any CI image
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.6"]
+
+[project.scripts]
+flakeradar-upload = "flakeradar_uploader.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["flakeradar_uploader*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["flakeradar_uploader"]
