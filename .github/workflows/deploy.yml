@@ -1,0 +1,52 @@
+# Deploys main to the server after CI passes. Does nothing until the server is set up.
+# Setup (docs/deploy.md): repository variable DEPLOY_HOST, secrets DEPLOY_USER and DEPLOY_SSH_KEY.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      vars.DEPLOY_HOST != '' &&
+      (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        env:
+          HOST: ${{ vars.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key "$USER@$HOST" '
+            set -e
+            cd ~/flakeradar
+            git fetch --quiet origin main && git reset --hard origin/main
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker image prune -f
+          '
+      - name: Smoke check
+        env:
+          SITE: ${{ vars.SITE_URL }}
+        if: ${{ vars.SITE_URL != '' }}
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS "$SITE/api/readyz" && exit 0
+            sleep 10
+          done
+          exit 1
