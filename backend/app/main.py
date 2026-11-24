@@ -8,11 +8,11 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
+from app.analytics.router import router as analytics_router
+from app.auth.router import router as auth_router
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
 from app.core.logging import configure_logging, log_fields, request_id_var
-from app.analytics.router import router as analytics_router
-from app.auth.router import router as auth_router
 from app.health.router import router as health_router
 from app.ingest.router import router as ingest_router
 from app.projects.router import router as projects_router

@@ -11,6 +11,7 @@
   --error: #b91c1c;
   --skipped: #8a9591;
   --tint-failed: #fff4ed;
+  --tint-passed: #effaf2;
   --font-ui: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: light;
@@ -29,6 +30,7 @@
     --error: #f87171;
     --skipped: #7b8783;
     --tint-failed: #2a1d16;
+    --tint-passed: #142a1c;
     color-scheme: dark;
   }
 }
@@ -367,4 +369,254 @@ pre {
   td {
     padding: 8px 10px;
   }
+}
+
+/* --- Sprint 2: navigation, accounts, tests, settings ------------------------------- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.tabs a {
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.tabs a:hover {
+  color: var(--ink);
+}
+
+.tabs a.active {
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  font-weight: 600;
+}
+
+button.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button.danger {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+button.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.auth {
+  max-width: 380px;
+  margin: 48px auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 28px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0 16px;
+}
+
+.stack label {
+  font-weight: 500;
+}
+
+.stack button {
+  margin-top: 8px;
+}
+
+.form-error {
+  color: var(--error);
+  margin: 4px 0 0;
+}
+
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+
+.inline-form .form-error {
+  flex-basis: 100%;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.section-title {
+  font-size: 16px;
+  margin: 28px 0 10px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 130px;
+}
+
+.score-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.score-fill {
+  display: block;
+  height: 100%;
+  background: var(--skipped);
+}
+
+.score-fill.score-flagged {
+  background: var(--failed);
+}
+
+.score-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  min-width: 2.6em;
+  text-align: right;
+}
+
+.reason {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.test-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.score-panel {
+  display: grid;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+}
+
+.score-panel .score {
+  max-width: 320px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.reason-large {
+  margin: 0;
+  font-size: 15px;
+}
+
+.score-panel .counts {
+  margin: 0;
+}
+
+.timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.tick {
+  width: 12px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.tick-passed { background: var(--passed); }
+.tick-failed { background: var(--failed); }
+.tick-error { background: var(--error); }
+.tick-skipped { background: var(--skipped); opacity: 0.5; }
+
+.tick-retried {
+  outline: 2px solid var(--failed);
+  outline-offset: 1px;
+}
+
+.notice-success {
+  border-color: var(--passed);
+  background: var(--tint-passed);
+}
+
+.token-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.token-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  flex: 1;
+  min-width: 0;
+}
+
+tr.revoked td {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+tr.revoked td:last-child {
+  text-decoration: none;
 }

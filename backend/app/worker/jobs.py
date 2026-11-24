@@ -8,11 +8,11 @@ from rq import get_current_job
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.analytics.service import recompute_stats
 from app.core.logging import log_fields
 from app.db.session import session_scope
 from app.ingest import storage
 from app.ingest.junit import JUnitParseError, parse_junit_xml
-from app.analytics.service import recompute_stats
 from app.ingest.processing import store_report
 from app.models import Project, TestResult, Upload, UploadStatus
 
