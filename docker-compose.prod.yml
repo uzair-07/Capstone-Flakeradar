@@ -1,0 +1,35 @@
+# Production overrides: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Needs a .env file next to this one (see docs/deploy.md).
+services:
+  db:
+    ports: !reset []
+    restart: unless-stopped
+
+  redis:
+    ports: !reset []
+    restart: unless-stopped
+
+  api:
+    ports: !reset []
+    restart: unless-stopped
+    environment:
+      FLAKERADAR_SECRET_KEY: ${FLAKERADAR_SECRET_KEY:?set FLAKERADAR_SECRET_KEY in .env}
+      FLAKERADAR_COOKIE_SECURE: "true"
+      FLAKERADAR_ALLOW_REGISTRATION: ${FLAKERADAR_ALLOW_REGISTRATION:-false}
+      FLAKERADAR_CORS_ORIGINS: '["https://${SITE_ADDRESS:?set SITE_ADDRESS in .env}"]'
+
+  worker:
+    restart: unless-stopped
+
+  web:
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS in .env}
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+
+volumes:
+  caddy_data:

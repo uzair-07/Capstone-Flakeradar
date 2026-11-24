@@ -1,0 +1,246 @@
+{
+  "description": "Ground truth for the FlakeRadar demo suite: 40 stable tests and 20 flaky tests with fixed failure probabilities.",
+  "classname": "demo.test_demo_suite",
+  "tests": [
+    {
+      "name": "test_stable_01",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_02",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_03",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_04",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_05",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_06",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_07",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_08",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_09",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_10",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_11",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_12",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_13",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_14",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_15",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_16",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_17",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_18",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_19",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_20",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_21",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_22",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_23",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_24",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_25",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_26",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_27",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_28",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_29",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_30",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_31",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_32",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_33",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_34",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_35",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_36",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_37",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_38",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_39",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_stable_40",
+      "failure_probability": 0.0
+    },
+    {
+      "name": "test_flaky_02pct_1",
+      "failure_probability": 0.02
+    },
+    {
+      "name": "test_flaky_02pct_2",
+      "failure_probability": 0.02
+    },
+    {
+      "name": "test_flaky_02pct_3",
+      "failure_probability": 0.02
+    },
+    {
+      "name": "test_flaky_02pct_4",
+      "failure_probability": 0.02
+    },
+    {
+      "name": "test_flaky_05pct_1",
+      "failure_probability": 0.05
+    },
+    {
+      "name": "test_flaky_05pct_2",
+      "failure_probability": 0.05
+    },
+    {
+      "name": "test_flaky_05pct_3",
+      "failure_probability": 0.05
+    },
+    {
+      "name": "test_flaky_05pct_4",
+      "failure_probability": 0.05
+    },
+    {
+      "name": "test_flaky_10pct_1",
+      "failure_probability": 0.1
+    },
+    {
+      "name": "test_flaky_10pct_2",
+      "failure_probability": 0.1
+    },
+    {
+      "name": "test_flaky_10pct_3",
+      "failure_probability": 0.1
+    },
+    {
+      "name": "test_flaky_10pct_4",
+      "failure_probability": 0.1
+    },
+    {
+      "name": "test_flaky_20pct_1",
+      "failure_probability": 0.2
+    },
+    {
+      "name": "test_flaky_20pct_2",
+      "failure_probability": 0.2
+    },
+    {
+      "name": "test_flaky_20pct_3",
+      "failure_probability": 0.2
+    },
+    {
+      "name": "test_flaky_20pct_4",
+      "failure_probability": 0.2
+    },
+    {
+      "name": "test_flaky_40pct_1",
+      "failure_probability": 0.4
+    },
+    {
+      "name": "test_flaky_40pct_2",
+      "failure_probability": 0.4
+    },
+    {
+      "name": "test_flaky_40pct_3",
+      "failure_probability": 0.4
+    },
+    {
+      "name": "test_flaky_40pct_4",
+      "failure_probability": 0.4
+    }
+  ]
+}

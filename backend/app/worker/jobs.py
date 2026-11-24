@@ -5,14 +5,16 @@ import uuid
 from datetime import UTC, datetime
 
 from rq import get_current_job
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.analytics.service import recompute_stats
 from app.core.logging import log_fields
 from app.db.session import session_scope
 from app.ingest import storage
 from app.ingest.junit import JUnitParseError, parse_junit_xml
 from app.ingest.processing import store_report
-from app.models import Upload, UploadStatus
+from app.models import Project, TestResult, Upload, UploadStatus
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,12 @@ def process_upload(upload_id: str) -> dict[str, object]:
         try:
             report = parse_junit_xml(storage.read_report(upload.file_path))
             run = store_report(db, upload, report)
+            project = db.get(Project, upload.project_id)
+            case_ids = db.scalars(
+                select(TestResult.test_case_id).where(TestResult.run_id == run.id).distinct()
+            )
+            if project is not None:
+                recompute_stats(db, project, list(case_ids))
             upload.status = UploadStatus.DONE
             upload.error = None
             upload.processed_at = datetime.now(UTC)

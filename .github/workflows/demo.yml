@@ -1,0 +1,42 @@
+# Runs the demo suite (seeded flaky tests) every day and uploads the results to FlakeRadar,
+# so the deployed instance keeps collecting real CI history. Each day runs the suite twice
+# on the same commit (attempt 1 and 2), like a CI re-run.
+#
+# Setup: repository variable FLAKERADAR_URL and secret FLAKERADAR_TOKEN (project "demo").
+# Without them the reports are only kept as workflow artifacts.
+name: Demo suite
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest ./uploader
+      - name: Run the demo suite twice
+        run: |
+          pytest demo -q -p no:cacheprovider --junitxml=demo-attempt-1.xml || true
+          pytest demo -q -p no:cacheprovider --junitxml=demo-attempt-2.xml || true
+      - name: Upload to FlakeRadar
+        if: ${{ vars.FLAKERADAR_URL != '' }}
+        env:
+          FLAKERADAR_URL: ${{ vars.FLAKERADAR_URL }}
+          FLAKERADAR_TOKEN: ${{ secrets.FLAKERADAR_TOKEN }}
+        run: |
+          flakeradar-upload demo-attempt-1.xml --project demo --attempt 1 --wait
+          flakeradar-upload demo-attempt-2.xml --project demo --attempt 2 --wait
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-reports
+          path: demo-attempt-*.xml
+          retention-days: 30

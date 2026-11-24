@@ -15,3 +15,16 @@ def run_worker() -> None:
 
 def fixture_bytes(name: str) -> bytes:
     return (FIXTURES / name).read_bytes()
+
+
+def junit_report(results: dict[str, str], timestamp: str) -> bytes:
+    """A minimal JUnit report: {test name: "passed" | "failed"} in class tests.test_demo."""
+    cases = []
+    for name, status in results.items():
+        body = '<failure message="boom"/>' if status == "failed" else ""
+        cases.append(
+            f'<testcase classname="tests.test_demo" name="{name}" time="0.1">{body}</testcase>'
+        )
+    return (
+        f'<testsuite name="demo" timestamp="{timestamp}">{"".join(cases)}</testsuite>'
+    ).encode()

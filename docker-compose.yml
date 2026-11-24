@@ -33,6 +33,8 @@ services:
       FLAKERADAR_DATABASE_URL: postgresql+psycopg://flakeradar:${POSTGRES_PASSWORD:-flakeradar}@db:5432/flakeradar
       FLAKERADAR_REDIS_URL: redis://redis:6379/0
       FLAKERADAR_CORS_ORIGINS: '["http://localhost:8080","http://localhost:5173"]'
+      # Signs login sessions. Local default only; set a long random value on a server.
+      FLAKERADAR_SECRET_KEY: ${FLAKERADAR_SECRET_KEY:-local-development-secret-change-me}
     ports:
       - "8000:8000"
     volumes:

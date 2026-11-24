@@ -14,6 +14,10 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(100))
     slug: Mapped[str] = mapped_column(String(100), unique=True)
     default_branch: Mapped[str] = mapped_column(String(255), default="main")
+    # Projects made with the admin CLI before accounts existed have no owner until claimed.
+    owner_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     tokens: Mapped[list["ApiToken"]] = relationship(back_populates="project")

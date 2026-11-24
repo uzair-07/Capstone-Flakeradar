@@ -1,5 +1,6 @@
 """Application settings, read from environment variables prefixed with FLAKERADAR_."""
 
+import secrets
 from functools import lru_cache
 from pathlib import Path
 
@@ -18,6 +19,17 @@ class Settings(BaseSettings):
 
     log_level: str = "INFO"
     cors_origins: list[str] = ["http://localhost:5173"]
+
+    # Sessions. Set FLAKERADAR_SECRET_KEY in production; without it a random key is used and
+    # everyone is logged out when the API restarts.
+    secret_key: str = ""
+    session_days: int = 7
+    cookie_secure: bool = False  # set true when served over HTTPS
+    allow_registration: bool = True
+
+    def model_post_init(self, __context: object) -> None:
+        if not self.secret_key:
+            self.secret_key = secrets.token_urlsafe(48)
 
 
 @lru_cache

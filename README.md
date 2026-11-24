@@ -6,10 +6,10 @@ FlakeRadar collects the JUnit XML reports your test runs already produce, stores
 history, and (from Sprint 2) scores how flaky each test is so you can quarantine it instead of
 re-running red builds.
 
-> **Status: Sprint 1 — walking skeleton.** Reports can be uploaded from CI, parsed in the
-> background and browsed on the Runs page. Accounts, flakiness scoring and quarantine come in
-> the next sprints. The read endpoints have no login yet, so run it only on your own machine
-> or a private network for now.
+> **Status: Sprint 2 done (24 Nov 2026).** Reports are uploaded from CI, parsed in the
+> background and scored: the Tests page ranks tests by an explainable flakiness score.
+> Accounts, projects and CI tokens are managed in the web app. Quarantine and
+> `quarantine.json` follow in Sprint 3. See [evaluation/](evaluation/) for measured accuracy.
 
 ## Architecture
 
@@ -36,20 +36,27 @@ Needs Docker Desktop.
 docker compose up --build
 ```
 
-Then, in a second terminal:
+Then:
+
+1. Open **http://localhost:8080**, create an account and a project.
+2. In **Settings**, create a CI token and copy it.
+3. Upload reports (any machine with Python 3.10+):
 
 ```bash
-# 1. Create a project; this prints a CI token once
-docker compose exec api python -m app.cli create-project --name "Demo"
-
-# 2. Upload a sample report (any machine with Python 3.10+)
 pip install ./uploader
 flakeradar-upload backend/tests/fixtures/junit/pytest.xml \
-  --server http://localhost:8080 --project demo --token <token from step 1> --wait
+  --server http://localhost:8080 --project <project slug> --token <token> --wait
+
+# or 60 commits of simulated history with known flaky tests:
+python evaluation/simulate.py --commits 60 --server http://localhost:8080 \
+  --project <project slug> --token <token>
 ```
 
-Open **http://localhost:8080** for the Runs page and **http://localhost:8080/api/docs** for
-the API documentation.
+The **Tests** page then ranks tests by flakiness score, each with the reason. API
+documentation is at **http://localhost:8080/api/docs**.
+
+Projects created with the admin CLI before accounts existed have no owner. After registering,
+run `docker compose exec api python -m app.cli claim-projects --owner you@example.com`.
 
 On Windows PowerShell, put the command on one line or replace the `\` line breaks with a
 backtick (`` ` ``).
@@ -78,9 +85,13 @@ If FlakeRadar is unreachable the uploader warns and exits 0, so it never breaks 
 | --- | --- | --- |
 | `POST /api/v1/projects/{slug}/uploads` | project token | Upload a JUnit XML report (multipart `file`, optional `commit_sha`, `branch`, `ci_run_id`, `attempt`). Returns `202`, or `200` with `duplicate: true` if the same file was already received. |
 | `GET /api/v1/uploads/{id}` | project token | Processing status: `received`, `processing`, `done` or `failed` (with a reason) |
-| `GET /api/v1/projects` | none (Sprint 1) | Projects |
-| `GET /api/v1/projects/{slug}/runs?limit=&cursor=&branch=` | none (Sprint 1) | Runs, newest first, cursor-paginated |
-| `GET /api/v1/runs/{id}` | none (Sprint 1) | One run with its results, failures first |
+| `POST /api/v1/auth/register`, `/login`, `/logout`, `GET /auth/me` | session cookie | Accounts |
+| `GET/POST /api/v1/projects` | session | Your projects |
+| `GET/POST /api/v1/projects/{slug}/tokens`, `DELETE .../tokens/{id}` | session | CI tokens (plain token shown once) |
+| `GET /api/v1/projects/{slug}/runs?limit=&cursor=&branch=` | session | Runs, newest first, cursor-paginated |
+| `GET /api/v1/runs/{id}` | session | One run with its results, failures first |
+| `GET /api/v1/projects/{slug}/tests?sort=score&q=&flaky_only=` | session | Tests with flakiness score and reason |
+| `GET /api/v1/tests/{id}` | session | One test with its recent history |
 | `GET /healthz`, `GET /readyz` | none | Liveness; database and queue readiness |
 
 Errors use [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details with a
@@ -131,10 +142,29 @@ npm run lint && npm run build
 
 | Sprint | Dates | Goal |
 | --- | --- | --- |
-| 1 | 26 Oct – 8 Nov | Walking skeleton: upload → parse → store → Runs page |
-| 2 | 9 – 22 Nov | Accounts and login, token management, flakiness score v1, deployment |
-| 3 | 23 Nov – 6 Dec | Tests list, test history, quarantine and `quarantine.json` (MVP) |
-| 4 | 7 – 20 Dec | Detector evaluation, performance at 1 M results, security review |
+| 1 | 26 Oct – 8 Nov | Walking skeleton: upload → parse → store → Runs page ✅ |
+| 2 | 9 – 22 Nov | Accounts, token management, flakiness score v1, demo suite, deployment setup ✅ (24 Nov) |
+| 3 | 23 Nov – 6 Dec | Quarantine and `quarantine.json`, live deployment (MVP) |
+| 4 | 7 – 20 Dec | Score tuning against the benchmark, performance at 1 M results, security review |
+
+## How the flakiness score works
+
+For each test's last 30 results (`backend/app/analytics/scoring.py`):
+
+- **Same-commit contradictions**: commits where the test both passed and failed, plus runs
+  the report marks as retried. The strongest evidence of flakiness.
+- **Flip rate**: how often the result switches between pass and fail on the main branch.
+  A test broken by a real bug fails consistently and flips rarely.
+
+`score = min(1, 0.6 × contradiction ratio + 0.4 × flip rate)`. Tests with at least 10 runs and a
+score of 0.15 or more are suggested for quarantine. Every score comes with a one-sentence
+reason, for example: "Passed and failed on the same commit 4 times; switched between pass and
+fail 7 times on the main branch (4 of 16 runs failed)."
+
+## Deployment
+
+See [docs/deploy.md](docs/deploy.md): one server, Docker Compose, automatic HTTPS, and a
+GitHub Actions workflow that deploys `main` after CI passes.
 
 ## License
 
