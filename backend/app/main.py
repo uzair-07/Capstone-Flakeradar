@@ -11,8 +11,11 @@ from app import __version__
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
 from app.core.logging import configure_logging, log_fields, request_id_var
+from app.analytics.router import router as analytics_router
+from app.auth.router import router as auth_router
 from app.health.router import router as health_router
 from app.ingest.router import router as ingest_router
+from app.projects.router import router as projects_router
 from app.runs.router import router as runs_router
 
 logger = logging.getLogger("app.request")
@@ -60,6 +63,7 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
+        allow_credentials=True,
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
     )
@@ -69,7 +73,10 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(health_router, prefix="/api", include_in_schema=False)
     app.include_router(ingest_router, prefix="/api/v1")
+    app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(projects_router, prefix="/api/v1")
     app.include_router(runs_router, prefix="/api/v1")
+    app.include_router(analytics_router, prefix="/api/v1")
     return app
 
 

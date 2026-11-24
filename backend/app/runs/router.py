@@ -1,8 +1,4 @@
-"""Read endpoints for projects and runs.
-
-Sprint 1 limitation: these endpoints are not authenticated yet. User login arrives in
-Sprint 2; until then run the stack only on your own machine or a private network.
-"""
+"""Runs of a project, visible only to the project's owner."""
 
 import base64
 import binascii
@@ -14,11 +10,11 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import and_, case, or_, select
 from sqlalchemy.orm import Session
 
+from app.auth.service import current_user, owned_project
 from app.core.errors import AppError, NotFoundError
 from app.db.session import get_db
-from app.models import CiRun, Project, TestCase, TestResult
-from app.projects.service import get_project_by_slug
-from app.runs.schemas import ProjectOut, ResultOut, RunDetail, RunPage, RunSummary
+from app.models import CiRun, Project, TestCase, TestResult, User
+from app.runs.schemas import ResultOut, RunDetail, RunPage, RunSummary
 
 router = APIRouter(tags=["runs"])
 
@@ -44,20 +40,16 @@ def _decode_cursor(cursor: str) -> tuple[datetime, uuid.UUID]:
         raise AppError("The cursor is not valid. Start again without one.") from exc
 
 
-@router.get("/projects", response_model=list[ProjectOut], summary="List projects")
-def list_projects(db: Session = Depends(get_db)) -> list[Project]:
-    return list(db.scalars(select(Project).order_by(Project.name)))
-
-
 @router.get("/projects/{project_slug}/runs", response_model=RunPage, summary="Runs, newest first")
 def list_runs(
     project_slug: str,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     cursor: str | None = None,
     branch: Annotated[str | None, Query(max_length=255)] = None,
+    user: User = Depends(current_user),
     db: Session = Depends(get_db),
 ) -> RunPage:
-    project = get_project_by_slug(db, project_slug)
+    project = owned_project(db, user, project_slug)
     query = select(CiRun).where(CiRun.project_id == project.id)
     if branch:
         query = query.where(CiRun.branch == branch)
@@ -80,11 +72,13 @@ def list_runs(
 
 
 @router.get("/runs/{run_id}", response_model=RunDetail, summary="One run with its test results")
-def get_run(run_id: uuid.UUID, db: Session = Depends(get_db)) -> RunDetail:
+def get_run(
+    run_id: uuid.UUID, user: User = Depends(current_user), db: Session = Depends(get_db)
+) -> RunDetail:
     run = db.get(CiRun, run_id)
-    if run is None:
+    project = db.get(Project, run.project_id) if run else None
+    if run is None or project is None or project.owner_id != user.id:
         raise NotFoundError("No run with this ID.")
-    project = db.get(Project, run.project_id)
     rows = db.execute(
         select(TestResult, TestCase)
         .join(TestCase, TestCase.id == TestResult.test_case_id)
@@ -108,6 +102,6 @@ def get_run(run_id: uuid.UUID, db: Session = Depends(get_db)) -> RunDetail:
     summary = RunSummary.model_validate(run)
     return RunDetail(
         **summary.model_dump(),
-        project_slug=project.slug if project else "",
+        project_slug=project.slug,
         results=results,
     )

@@ -42,6 +42,11 @@ class ForbiddenError(AppError):
     title = "Forbidden"
 
 
+class ConflictError(AppError):
+    status_code = 409
+    title = "Conflict"
+
+
 class PayloadTooLargeError(AppError):
     status_code = 413
     title = "Upload too large"

@@ -18,6 +18,7 @@ dependencies = [
     "defusedxml>=0.7.1",
     "redis>=5.0",
     "rq>=1.16",
+    "pyjwt>=2.8",
 ]
 
 [project.optional-dependencies]

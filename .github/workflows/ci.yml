@@ -94,9 +94,15 @@ jobs:
           python-version: "3.12"
       - name: Start the full stack
         run: docker compose up --build --detach --wait --wait-timeout 300
-      - name: Create a project and token
+      - name: Register, create a project and a CI token through the API
         run: |
-          token=$(docker compose exec -T api python -m app.cli create-project --name "Smoke" --slug smoke --json | jq -r .token)
+          api=http://localhost:8080/api/v1
+          curl -fsS -c jar -H 'Content-Type: application/json' \
+            -d '{"email":"smoke@example.com","password":"smoke-test-password"}' $api/auth/register
+          curl -fsS -b jar -H 'Content-Type: application/json' \
+            -d '{"name":"Smoke","slug":"smoke"}' $api/projects
+          token=$(curl -fsS -b jar -H 'Content-Type: application/json' -d '{"name":"ci"}' \
+            $api/projects/smoke/tokens | jq -r .token)
           echo "::add-mask::$token"
           echo "FLAKERADAR_TOKEN=$token" >> "$GITHUB_ENV"
       - name: Upload sample reports through the web proxy
@@ -104,10 +110,12 @@ jobs:
           pip install ./uploader
           flakeradar-upload "backend/tests/fixtures/junit/pytest.xml" "backend/tests/fixtures/junit/jest.xml" \
             --server http://localhost:8080 --project smoke --wait --fail-on-error
-      - name: Check the runs API and the web page
+      - name: Check runs, tests and the web page
         run: |
-          runs=$(curl -fsS http://localhost:8080/api/v1/projects/smoke/runs | jq '.items | length')
-          test "$runs" -eq 2
+          api=http://localhost:8080/api/v1
+          test "$(curl -fsS -b jar $api/projects/smoke/runs | jq '.items | length')" -eq 2
+          test "$(curl -fsS -b jar $api/projects/smoke/tests | jq '.total')" -eq 8
+          test "$(curl -s -o /dev/null -w '%{http_code}' $api/projects/smoke/runs)" -eq 401
           curl -fsS http://localhost:8080/ | grep -q '<div id="root">'
       - name: Logs on failure
         if: failure()

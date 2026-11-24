@@ -12,13 +12,14 @@ from alembic.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 
-from app.db.session import get_engine, session_scope
+from app.db.session import get_engine
 from app.main import app
-from app.projects.service import create_project, create_token
 from app.worker.queue import get_redis
 from tests.integration.helpers import BACKEND
 
-TABLES = "test_results, test_cases, ci_runs, uploads, api_tokens, projects"
+TABLES = (
+    "test_case_stats, test_results, test_cases, ci_runs, uploads, api_tokens, projects, users"
+)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -44,11 +45,18 @@ def client() -> Iterator[TestClient]:
         yield test_client
 
 
+OWNER = {"email": "owner@example.com", "password": "correct-horse-battery"}
+
+
 @pytest.fixture
-def project_token() -> tuple[str, str]:
-    """Returns (project slug, plain token)."""
-    with session_scope() as db:
-        project = create_project(db, "Demo shop", "demo")
-        token = create_token(db, project)
-        db.commit()
-        return project.slug, token.value
+def project_token(client: TestClient) -> tuple[str, str]:
+    """Registers and logs in `client`, creates a project and a CI token through the API.
+
+    Returns (project slug, plain token).
+    """
+    assert client.post("/api/v1/auth/register", json=OWNER).status_code == 201
+    created = client.post("/api/v1/projects", json={"name": "Demo shop", "slug": "demo"})
+    assert created.status_code == 201, created.text
+    token = client.post("/api/v1/projects/demo/tokens", json={"name": "ci"})
+    assert token.status_code == 201, token.text
+    return "demo", token.json()["token"]
